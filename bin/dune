@@ -1,0 +1,4 @@
+(executable
+ (public_name raytest)
+ (name main)
+ (libraries raylib paddle))

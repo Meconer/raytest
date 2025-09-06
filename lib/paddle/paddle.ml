@@ -1,0 +1,80 @@
+(* --- PADDLE Module Signature (Interface) --- *)
+(* This defines what the Paddle module will expose to the outside world.
+   It's a contract that the implementation must fulfill. *)
+module type PADDLE = sig
+  type t
+
+  val create : float -> float -> t
+  val move : int -> t -> t
+  val update : float -> float -> t -> t
+  val draw : t -> unit
+  val width : t -> float
+  val height : t -> float
+  val position : t -> Raylib.Vector2.t
+end
+
+(* --- PADDLE Module Implementation --- *)
+(* This is the actual code for the paddle. It contains the data structure
+   and the logic for movement and rendering. We are implementing the
+   PADDLE signature defined above. *)
+module Paddle : PADDLE = struct
+  (* The internal type for our paddle. We use a record to hold its
+     position and dimensions. This type is "abstract" to outside modules
+     because it's not exposed in the signature. *)
+  type t = {
+    mutable position : Raylib.Vector2.t;
+    width : float;
+    height : float;
+    speed : float;
+  }
+
+  (* Creates a new paddle instance at a given position. *)
+  let create x y =
+    {
+      position = Raylib.Vector2.create x y;
+      width = 100.0;
+      height = 20.0;
+      speed = 10.0;
+    }
+
+  let move direction paddle =
+    let move_vector =
+      match direction with
+      | 1 -> Raylib.Vector2.create paddle.speed 0.0
+      | -1 -> Raylib.Vector2.create (-1.0 *. paddle.speed) 0.0
+      | _ -> Raylib.Vector2.create 0.0 0.0
+    in
+    let new_pos = Raylib.Vector2.add move_vector paddle.position in
+    { paddle with position = new_pos }
+
+  (* Updates the paddle's position based on user input (left/right arrow keys).
+     It also constrains the paddle within the window boundaries. *)
+
+  let update delta_time screen_width paddle =
+    let speed = 500.0 in
+    let new_x =
+      if Raylib.is_key_down Raylib.Key.Left then
+        Raylib.Vector2.x paddle.position -. (speed *. delta_time)
+      else if Raylib.is_key_down Raylib.Key.Right then
+        Raylib.Vector2.x paddle.position +. (speed *. delta_time)
+      else Raylib.Vector2.x paddle.position
+    in
+    (* Clamp the new position to stay within the screen boundaries. *)
+    let clamp v min_v max_v = max min_v (min v max_v) in
+    let new_x_clamped = clamp new_x 0.0 (screen_width -. paddle.width) in
+    paddle.position <-
+      Raylib.Vector2.create new_x_clamped (Raylib.Vector2.y paddle.position);
+    paddle
+
+  (* Draws the paddle as a rectangle on the screen. *)
+  let draw paddle =
+    Raylib.draw_rectangle_v paddle.position
+      (Raylib.Vector2.create paddle.width paddle.height)
+      Raylib.Color.blue
+
+  (* Accessor functions to get the paddle's properties. These are exposed
+     in the signature. *)
+  let width paddle = paddle.width
+  let height paddle = paddle.height
+  let position paddle = paddle.position
+end
