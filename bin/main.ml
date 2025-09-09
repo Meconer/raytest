@@ -7,6 +7,10 @@ module Ball = struct
     speed : Raylib.Vector2.t;
     radius : int;
   }
+
+  let draw (ball : t) =
+    let open Raylib in
+    draw_circle_v ball.position (Float.of_int ball.radius) Color.gray
 end
 
 module State = struct
@@ -23,7 +27,7 @@ module State = struct
     let open Raylib in
     begin_drawing ();
     clear_background Color.raywhite;
-    draw_circle_v ball.position (Float.of_int ball.radius) Color.gray;
+    Ball.draw ball;
     let paddle_pos = Paddle.position paddle in
     let w = Paddle.width paddle in
     let h = Paddle.height paddle in
@@ -108,7 +112,10 @@ let rec loop (state : State.t) =
             else if is_key_down Key.Left then -1
             else 0
           in
-          let paddle = Paddle.Paddle.move move_paddle_dir paddle in
+          let screen_width = Float.of_int (get_screen_width ()) in
+          let paddle =
+            Paddle.Paddle.move 0.016 move_paddle_dir screen_width paddle
+          in
           { state with paddle }
       in
       State.draw state;

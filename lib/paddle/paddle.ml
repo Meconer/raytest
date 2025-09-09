@@ -5,7 +5,7 @@ module type PADDLE = sig
   type t
 
   val create : float -> float -> t
-  val move : int -> t -> t
+  val move : float -> int -> float -> t -> t
   val update : float -> float -> t -> t
   val draw : t -> unit
   val width : t -> float
@@ -34,29 +34,33 @@ module Paddle : PADDLE = struct
       position = Raylib.Vector2.create x y;
       width = 100.0;
       height = 20.0;
-      speed = 10.0;
+      speed = 500.0;
     }
 
-  let move direction paddle =
-    let move_vector =
+  let move delta_time direction screen_width paddle =
+    let old_x = Raylib.Vector2.x paddle.position in
+    let old_y = Raylib.Vector2.y paddle.position in
+    let new_x =
       match direction with
-      | 1 -> Raylib.Vector2.create paddle.speed 0.0
-      | -1 -> Raylib.Vector2.create (-1.0 *. paddle.speed) 0.0
-      | _ -> Raylib.Vector2.create 0.0 0.0
+      | 1 -> old_x +. (paddle.speed *. delta_time)
+      | -1 -> old_x -. (paddle.speed *. delta_time)
+      | _ -> old_x
     in
-    let new_pos = Raylib.Vector2.add move_vector paddle.position in
+    let clamp v min_v max_v = max min_v (min v max_v) in
+    let new_x_clamped = clamp new_x 0.0 (screen_width -. paddle.width) in
+    let new_pos = Raylib.Vector2.create new_x_clamped old_y in
+
     { paddle with position = new_pos }
 
   (* Updates the paddle's position based on user input (left/right arrow keys).
      It also constrains the paddle within the window boundaries. *)
 
   let update delta_time screen_width paddle =
-    let speed = 500.0 in
     let new_x =
       if Raylib.is_key_down Raylib.Key.Left then
-        Raylib.Vector2.x paddle.position -. (speed *. delta_time)
+        Raylib.Vector2.x paddle.position -. (paddle.speed *. delta_time)
       else if Raylib.is_key_down Raylib.Key.Right then
-        Raylib.Vector2.x paddle.position +. (speed *. delta_time)
+        Raylib.Vector2.x paddle.position +. (paddle.speed *. delta_time)
       else Raylib.Vector2.x paddle.position
     in
     (* Clamp the new position to stay within the screen boundaries. *)
