@@ -32,7 +32,7 @@ let move delta_time direction screen_width paddle =
 (* Updates the paddle's position based on user input (left/right arrow keys).
    It also constrains the paddle within the window boundaries. *)
 
-let update delta_time screen_width paddle =
+let update paddle delta_time =
   let new_x =
     if Raylib.is_key_down Raylib.Key.Left then
       Raylib.Vector2.x paddle.position -. (paddle.speed *. delta_time)
@@ -42,6 +42,7 @@ let update delta_time screen_width paddle =
   in
   (* Clamp the new position to stay within the screen boundaries. *)
   let clamp v min_v max_v = max min_v (min v max_v) in
+  let screen_width = float_of_int (Raylib.get_screen_width ()) in
   let new_x_clamped = clamp new_x 0.0 (screen_width -. paddle.width) in
   paddle.position <-
     Raylib.Vector2.create new_x_clamped (Raylib.Vector2.y paddle.position);
