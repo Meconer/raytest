@@ -38,15 +38,9 @@ let setup () =
   init_window screen_width screen_height
     "raylib [shapes] example - bouncing ball";
   let ball =
-    let position =
-      Vector2.create
-        ((Float.of_int @@ get_screen_width ()) /. 2.)
-        ((Float.of_int @@ get_screen_height ()) /. 2.)
-    in
-
-    let speed = Vector2.create 5. 4. in
-    let radius = 20 in
-    { Gamelib.Ball.position; speed; radius }
+    Gamelib.Ball.create
+      ((Float.of_int @@ get_screen_width ()) /. 2.)
+      ((Float.of_int @@ get_screen_height ()) /. 2.)
   in
 
   let paddle_x = float_of_int (get_screen_width () / 2) in
