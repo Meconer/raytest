@@ -1,23 +1,10 @@
-(* --- PADDLE Module Signature (Interface) --- *)
-(* This defines what the Paddle module will expose to the outside world.
-   It's a contract that the implementation must fulfill. *)
-module type PADDLE = sig
-  type t
-
-  val create : float -> float -> t
-  val move : float -> int -> float -> t -> t
-  val update : float -> float -> t -> t
-  val draw : t -> unit
-  val width : t -> float
-  val height : t -> float
-  val position : t -> Raylib.Vector2.t
-end
+(* lib/paddle.ml *)
 
 (* --- PADDLE Module Implementation --- *)
 (* This is the actual code for the paddle. It contains the data structure
    and the logic for movement and rendering. We are implementing the
    PADDLE signature defined above. *)
-module Paddle : PADDLE = struct
+module Paddle = struct
   (* The internal type for our paddle. We use a record to hold its
      position and dimensions. This type is "abstract" to outside modules
      because it's not exposed in the signature. *)

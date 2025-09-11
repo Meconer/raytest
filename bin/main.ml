@@ -14,11 +14,9 @@ module Ball = struct
 end
 
 module State = struct
-  open Paddle
-
   type t = {
     ball : Ball.t;
-    paddle : Paddle.t;
+    paddle : Gamelib.Paddle.Paddle.t;
     pause : bool;
     frames_counter : int;
   }
@@ -28,6 +26,7 @@ module State = struct
     begin_drawing ();
     clear_background Color.raywhite;
     Ball.draw ball;
+    let open Gamelib.Paddle in
     let paddle_pos = Paddle.position paddle in
     let w = Paddle.width paddle in
     let h = Paddle.height paddle in
@@ -64,7 +63,7 @@ let setup () =
 
   let paddle_x = float_of_int (get_screen_width () / 2) in
   let paddle_y = float_of_int (get_screen_height ()) *. 0.85 in
-  let open Paddle in
+  let open Gamelib.Paddle in
   let paddle = Paddle.create paddle_x paddle_y in
   set_target_fps 60;
   { State.ball; State.paddle; pause = false; frames_counter = 0 }
@@ -114,7 +113,7 @@ let rec loop (state : State.t) =
           in
           let screen_width = Float.of_int (get_screen_width ()) in
           let paddle =
-            Paddle.Paddle.move 0.016 move_paddle_dir screen_width paddle
+            Gamelib.Paddle.Paddle.move 0.016 move_paddle_dir screen_width paddle
           in
           { state with paddle }
       in
