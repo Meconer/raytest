@@ -14,12 +14,7 @@ module State = struct
     begin_drawing ();
     clear_background Color.raywhite;
     Gamelib.Ball.draw ball;
-    let open Gamelib in
-    let paddle_pos = Paddle.position paddle in
-    let w = Paddle.width paddle in
-    let h = Paddle.height paddle in
-    let size = Vector2.create w h in
-    draw_rectangle_v paddle_pos size Color.brown;
+    Gamelib.Paddle.draw paddle;
 
     draw_text "PRESS SPACE to PAUSE BALL MOVEMENT" 10
       (get_screen_height () - 25)
@@ -37,16 +32,13 @@ let setup () =
   set_config_flags [ ConfigFlags.Msaa_4x_hint ];
   init_window screen_width screen_height
     "raylib [shapes] example - bouncing ball";
-  let ball =
-    Gamelib.Ball.create
-      ((Float.of_int @@ get_screen_width ()) /. 2.)
-      ((Float.of_int @@ get_screen_height ()) /. 2.)
-  in
 
-  let paddle_x = float_of_int (get_screen_width () / 2) in
+  let mid_x = float_of_int (get_screen_width () / 2) in
+  let mid_y = float_of_int (get_screen_height () / 2) in
+  let ball = Gamelib.Ball.create mid_x mid_y in
+
   let paddle_y = float_of_int (get_screen_height ()) *. 0.85 in
-  let open Gamelib in
-  let paddle = Paddle.create paddle_x paddle_y in
+  let paddle = Gamelib.Paddle.create mid_x paddle_y in
   set_target_fps 60;
   { State.ball; State.paddle; pause = false; frames_counter = 0 }
 
