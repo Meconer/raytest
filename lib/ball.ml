@@ -33,3 +33,8 @@ let update t =
   let speed = Raylib.Vector2.create speed_x speed_y in
   let ball = { t with position = new_position; speed } in
   ball
+
+let maybe_hit_by_paddle t (*paddle*) =
+  (* let h = Paddle.height paddle in
+     let w = Paddle.width paddle in *)
+  t
