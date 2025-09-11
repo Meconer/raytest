@@ -1,22 +1,10 @@
 let screen_width = 1024
 let screen_height = 800
 
-module Ball = struct
-  type t = {
-    position : Raylib.Vector2.t;
-    speed : Raylib.Vector2.t;
-    radius : int;
-  }
-
-  let draw (ball : t) =
-    let open Raylib in
-    draw_circle_v ball.position (Float.of_int ball.radius) Color.gray
-end
-
 module State = struct
   type t = {
-    ball : Ball.t;
-    paddle : Gamelib.Paddle.Paddle.t;
+    ball : Gamelib.Ball.t;
+    paddle : Gamelib.Paddle.t;
     pause : bool;
     frames_counter : int;
   }
@@ -25,8 +13,8 @@ module State = struct
     let open Raylib in
     begin_drawing ();
     clear_background Color.raywhite;
-    Ball.draw ball;
-    let open Gamelib.Paddle in
+    Gamelib.Ball.draw ball;
+    let open Gamelib in
     let paddle_pos = Paddle.position paddle in
     let w = Paddle.width paddle in
     let h = Paddle.height paddle in
@@ -58,12 +46,12 @@ let setup () =
 
     let speed = Vector2.create 5. 4. in
     let radius = 20 in
-    { Ball.position; speed; radius }
+    { Gamelib.Ball.position; speed; radius }
   in
 
   let paddle_x = float_of_int (get_screen_width () / 2) in
   let paddle_y = float_of_int (get_screen_height ()) *. 0.85 in
-  let open Gamelib.Paddle in
+  let open Gamelib in
   let paddle = Paddle.create paddle_x paddle_y in
   set_target_fps 60;
   { State.ball; State.paddle; pause = false; frames_counter = 0 }
@@ -86,7 +74,7 @@ let rec loop (state : State.t) =
         if state.pause then
           { state with frames_counter = state.frames_counter + 1 }
         else
-          let { Ball.position; radius; speed } = state.ball in
+          let { Gamelib.Ball.position; radius; speed } = state.ball in
           let position = Vector2.add position speed in
 
           (* Check walls collision for bouncing *)
@@ -103,7 +91,7 @@ let rec loop (state : State.t) =
             else Vector2.y speed
           in
           let speed = Vector2.create speed_x speed_y in
-          let ball = { Ball.position; radius; speed } in
+          let ball = { Gamelib.Ball.position; radius; speed } in
           let state = { state with ball } in
           let paddle = state.paddle in
           let move_paddle_dir =
@@ -113,7 +101,7 @@ let rec loop (state : State.t) =
           in
           let screen_width = Float.of_int (get_screen_width ()) in
           let paddle =
-            Gamelib.Paddle.Paddle.move 0.016 move_paddle_dir screen_width paddle
+            Gamelib.Paddle.move 0.016 move_paddle_dir screen_width paddle
           in
           { state with paddle }
       in
