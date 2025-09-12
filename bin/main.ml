@@ -61,7 +61,7 @@ let rec loop (state : State.t) =
             Gamelib.Paddle.update state.paddle (1.0 /. float_of_int target_fps)
           in
 
-          (* let new_ball = Gamelib.Ball.maybe_hit_by_paddle new_ball new_paddle in *)
+          let new_ball = Gamelib.Ball.maybe_hit_by_paddle new_ball new_paddle in
           { state with paddle = new_paddle; ball = new_ball }
       in
       State.draw state;
