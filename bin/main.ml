@@ -6,6 +6,7 @@ module State = struct
   type t = {
     ball : Gamelib.Ball.t;
     paddle : Gamelib.Paddle.t;
+    (* walls : Gamelib.Walls.t; *)
     pause : bool;
     frames_counter : int;
   }
