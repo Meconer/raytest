@@ -6,17 +6,18 @@ module State = struct
   type t = {
     ball : Gamelib.Ball.t;
     paddle : Gamelib.Paddle.t;
-    (* walls : Gamelib.Walls.t; *)
+    bricks : Gamelib.Bricks.t;
     pause : bool;
     frames_counter : int;
   }
 
-  let draw { ball; paddle; pause; frames_counter } =
+  let draw { ball; paddle; bricks; pause; frames_counter } =
     let open Raylib in
     begin_drawing ();
     clear_background Color.raywhite;
     Gamelib.Ball.draw ball;
     Gamelib.Paddle.draw paddle;
+    Gamelib.Bricks.draw bricks;
 
     draw_text "PRESS SPACE to PAUSE BALL MOVEMENT" 10
       (get_screen_height () - 25)
@@ -41,8 +42,10 @@ let setup () =
 
   let paddle_y = float_of_int (get_screen_height ()) *. 0.85 in
   let paddle = Gamelib.Paddle.create mid_x paddle_y in
+
+  let bricks = Gamelib.Bricks.create 5 10 in
   set_target_fps target_fps;
-  { State.ball; State.paddle; pause = false; frames_counter = 0 }
+  { State.ball; State.paddle; bricks; pause = false; frames_counter = 0 }
 
 let rec loop (state : State.t) =
   match Raylib.window_should_close () with
