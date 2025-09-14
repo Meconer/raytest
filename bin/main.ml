@@ -1,5 +1,8 @@
 let screen_width = 1024
 let screen_height = 800
+
+let no_of_bricks_per_row = 12
+let no_of_brick_rows = 10
 let target_fps = 60
 
 module State = struct
@@ -43,7 +46,7 @@ let setup () =
   let paddle_y = float_of_int (get_screen_height ()) *. 0.85 in
   let paddle = Gamelib.Paddle.create mid_x paddle_y in
 
-  let bricks = Gamelib.Bricks.create 5 10 in
+  let bricks = Gamelib.Bricks.create no_of_brick_rows no_of_bricks_per_row in
   set_target_fps target_fps;
   { State.ball; State.paddle; bricks; pause = false; frames_counter = 0 }
 
