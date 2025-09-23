@@ -38,7 +38,7 @@ let update t =
   let ball = { t with position = new_position; speed } in
   ball
 
-let in_y_range ball paddle =
+let not_in_y_range ball paddle =
   let ball_y = Raylib.Vector2.y ball.position in
   let paddle_y = Raylib.Vector2.y (Paddle.position paddle) in
   let paddle_h = Paddle.height paddle in
@@ -46,7 +46,7 @@ let in_y_range ball paddle =
   ball_y +. ball.radius < paddle_y
   || ball_y -. ball.radius > paddle_y +. paddle_h
 
-let in_x_range ball paddle =
+let not_in_x_range ball paddle =
   let ball_x = Raylib.Vector2.x ball.position in
   let paddle_x = Raylib.Vector2.x (Paddle.position paddle) in
   let paddle_w = Paddle.width paddle in
@@ -61,6 +61,6 @@ let reverse_y_speed t =
 
 let maybe_hit_by_paddle t paddle =
   (* let w = Paddle.width paddle in *)
-  if in_y_range t paddle then t
-  else if in_x_range t paddle then t
+  if not_in_y_range t paddle then t
+  else if not_in_x_range t paddle then t
   else reverse_y_speed t
