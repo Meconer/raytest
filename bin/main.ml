@@ -1,6 +1,5 @@
 let screen_width = 1024
 let screen_height = 800
-
 let no_of_bricks_per_row = 12
 let no_of_brick_rows = 10
 let target_fps = 60
@@ -69,7 +68,15 @@ let rec loop (state : State.t) =
           in
 
           let new_ball = Gamelib.Ball.maybe_hit_by_paddle new_ball new_paddle in
-          { state with paddle = new_paddle; ball = new_ball }
+          let new_ball, new_bricks =
+            Gamelib.Bricks.maybe_hit_bricks new_ball state.bricks
+          in
+          {
+            state with
+            paddle = new_paddle;
+            ball = new_ball;
+            bricks = new_bricks;
+          }
       in
       State.draw state;
       loop state
