@@ -8,18 +8,18 @@ module State = struct
   type t = {
     ball : Gamelib.Ball.t;
     paddle : Gamelib.Paddle.t;
-    bricks : Gamelib.Bricks.t;
+    brick_state : Gamelib.Bricks.t;
     pause : bool;
     frames_counter : int;
   }
 
-  let draw { ball; paddle; bricks; pause; frames_counter } =
+  let draw { ball; paddle; brick_state; pause; frames_counter } =
     let open Raylib in
     begin_drawing ();
     clear_background Color.raywhite;
     Gamelib.Ball.draw ball;
     Gamelib.Paddle.draw paddle;
-    Gamelib.Bricks.draw bricks;
+    Gamelib.Bricks.draw brick_state;
 
     draw_text "PRESS SPACE to PAUSE BALL MOVEMENT" 10
       (get_screen_height () - 25)
@@ -45,9 +45,11 @@ let setup () =
   let paddle_y = float_of_int (get_screen_height ()) *. 0.85 in
   let paddle = Gamelib.Paddle.create mid_x paddle_y in
 
-  let bricks = Gamelib.Bricks.create no_of_brick_rows no_of_bricks_per_row in
+  let brick_state =
+    Gamelib.Bricks.create no_of_brick_rows no_of_bricks_per_row
+  in
   set_target_fps target_fps;
-  { State.ball; State.paddle; bricks; pause = false; frames_counter = 0 }
+  { State.ball; State.paddle; brick_state; pause = false; frames_counter = 0 }
 
 let rec loop (state : State.t) =
   match Raylib.window_should_close () with
@@ -69,13 +71,16 @@ let rec loop (state : State.t) =
 
           let new_ball = Gamelib.Ball.maybe_hit_by_paddle new_ball new_paddle in
           let new_ball, new_bricks =
-            Gamelib.Bricks.maybe_hit_bricks new_ball state.bricks
+            Gamelib.Bricks.maybe_hit_bricks new_ball state.brick_state.bricks
+          in
+          let new_brick_state =
+            { state.brick_state with bricks = new_bricks }
           in
           {
             state with
             paddle = new_paddle;
             ball = new_ball;
-            bricks = new_bricks;
+            brick_state = new_brick_state;
           }
       in
       State.draw state;
