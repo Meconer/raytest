@@ -2,6 +2,7 @@ type t = {
   position : Raylib.Vector2.t;
   speed : Raylib.Vector2.t;
   radius : float;
+  direction_change : bool;
 }
 
 let draw (ball : t) =
@@ -14,6 +15,7 @@ let create x y =
     position = Raylib.Vector2.create x y;
     radius = 10.0;
     speed = Raylib.Vector2.create 5.0 4.0;
+    direction_change = false;
   }
 
 let update t =
@@ -57,10 +59,14 @@ let not_in_x_range ball paddle =
 let reverse_y_speed t =
   let speed_y = Raylib.Vector2.y t.speed in
   let speed_x = Raylib.Vector2.x t.speed in
-  { t with speed = Raylib.Vector2.create speed_x (speed_y *. -1.0) }
+  {
+    t with
+    speed = Raylib.Vector2.create speed_x (speed_y *. -1.0);
+    direction_change = true;
+  }
 
 let maybe_hit_by_paddle t paddle =
-  (* let w = Paddle.width paddle in *)
-  if not_in_y_range t paddle then t
+  if t.direction_change then { t with direction_change = false }
+  else if not_in_y_range t paddle then t
   else if not_in_x_range t paddle then t
   else reverse_y_speed t
