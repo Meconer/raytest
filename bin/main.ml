@@ -4,16 +4,17 @@ let no_of_bricks_per_row = 12
 let no_of_brick_rows = 10
 let target_fps = 60
 
-module State = struct
+module GameState = struct
   type t = {
     ball : Gamelib.Ball.t;
     paddle : Gamelib.Paddle.t;
     brick_state : Gamelib.Bricks.t;
     pause : bool;
     frames_counter : int;
+    balls_left : int;
   }
 
-  let draw { ball; paddle; brick_state; pause; frames_counter } =
+  let draw { ball; paddle; brick_state; pause; frames_counter; balls_left } =
     let open Raylib in
     begin_drawing ();
     clear_background Color.raywhite;
@@ -26,9 +27,16 @@ module State = struct
       20 Color.lightgray;
 
     if pause && frames_counter mod 60 > 30 then
-      draw_text "Paused" 350 200 30 Color.gray;
+      draw_text "Paused" 350 200 20 Color.gray;
 
     draw_fps 10 10;
+
+    let balls_left_pos_x =
+      screen_width - measure_text "Balls left: 3" 20 - 10
+    in
+    draw_text
+      (Printf.sprintf "Balls left: %d" balls_left)
+      balls_left_pos_x 10 20 Color.gray;
     end_drawing ()
 end
 
@@ -49,9 +57,16 @@ let setup () =
     Gamelib.Bricks.create no_of_brick_rows no_of_bricks_per_row
   in
   set_target_fps target_fps;
-  { State.ball; State.paddle; brick_state; pause = false; frames_counter = 0 }
+  {
+    GameState.ball;
+    GameState.paddle;
+    brick_state;
+    pause = false;
+    frames_counter = 0;
+    balls_left = 3;
+  }
 
-let rec loop (state : State.t) =
+let rec loop (state : GameState.t) =
   match Raylib.window_should_close () with
   | true -> Raylib.close_window ()
   | false ->
@@ -83,7 +98,7 @@ let rec loop (state : State.t) =
             brick_state = new_brick_state;
           }
       in
-      State.draw state;
+      GameState.draw state;
       loop state
 
 let () = setup () |> loop
