@@ -54,13 +54,20 @@ let not_in_x_range ball paddle =
   ball_x +. ball.radius < paddle_x
   || ball_x -. ball.radius > paddle_x +. paddle_w
 
-let reverse_y_speed t =
-  let speed_y = Raylib.Vector2.y t.speed in
-  let speed_x = Raylib.Vector2.x t.speed in
-  { t with speed = Raylib.Vector2.create speed_x (speed_y *. -1.0) }
+let reverse_y_speed ball rel_hit_pos =
+  let speed_y = Raylib.Vector2.y ball.speed in
+  let speed_x = Raylib.Vector2.x ball.speed in
+  let x_chg = (rel_hit_pos -. 0.5) *. 2.0 in
+  let speed_x = speed_x *. x_chg in
+  print_float speed_x;
+  print_endline "";
+  { ball with speed = Raylib.Vector2.create speed_x (speed_y *. -1.0) }
 
 let maybe_hit_by_paddle ball paddle =
   if Raylib.Vector2.y ball.speed <= 0. then ball
+    (* Only check on the way down *)
   else if not_in_y_range ball paddle then ball
   else if not_in_x_range ball paddle then ball
-  else reverse_y_speed ball
+  else
+    let paddle_hit_rel = Paddle.paddle_hit_rel paddle ball.position in
+    reverse_y_speed ball paddle_hit_rel

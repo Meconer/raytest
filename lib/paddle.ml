@@ -55,6 +55,12 @@ let draw paddle =
     (Raylib.Vector2.create paddle.width paddle.height)
     Raylib.Color.blue
 
+let paddle_hit_rel paddle hit_pos =
+  let paddle_x = Raylib.Vector2.x paddle.position in
+  let paddle_w = paddle.width in
+  let ball_x = Raylib.Vector2.x hit_pos in
+  (ball_x -. paddle_x) /. paddle_w
+
 (* Accessor functions to get the paddle's properties. These are exposed
    in the signature. *)
 let width paddle = paddle.width

@@ -73,5 +73,5 @@ let maybe_hit_bricks (ball : Ball.t) bricks =
           let brick = bricks.(r).(c) in
           if brick.visible then (
             bricks.(r).(c) <- { brick with visible = false };
-            (Ball.reverse_y_speed ball, bricks))
+            (Ball.reverse_y_speed ball 0.5, bricks))
           else (ball, bricks))
